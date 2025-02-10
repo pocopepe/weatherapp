@@ -6,6 +6,7 @@ import fetchData from '../../helper/fetchData';
 
 
 export default function HomeScreen() {
+  const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [city, onChangeCity]= useState("");
   const url = "https://api.open-meteo.com/v1/forecast";
@@ -19,11 +20,16 @@ export default function HomeScreen() {
         return;
       }
       let location = await Location.getCurrentPositionAsync({});
-      fetchData(location);
+      setLocation(location)
 
     }
     getCurrentLocation();
   }, []);
+  
+  useEffect(()=>{
+    if (location) {
+    fetchData(location);}
+  }, [location])
   
   
 
