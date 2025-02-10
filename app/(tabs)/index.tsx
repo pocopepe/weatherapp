@@ -3,17 +3,25 @@ import { StyleSheet, TextInput, Text } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
 import fetchData from '../../helper/fetchData';
+import fetchLocations from '../../helper/locationComplete'
+
+interface WeatherData {
+  date: string;
+  description: string;
+  maxTemp: number;
+  minTemp: number;
+  currentTemp: number;
+}
 
 interface Coords {
   lat: number;
   long: number;
 }
-
 export default function HomeScreen() {
   const [coords, setCoords] = useState<Coords | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [city, onChangeCity] = useState("");
-
+  const [weather, setWeather] = useState<WeatherData[] | null>(null); 
+  const [city, onChangeCity] = useState<string | null>(null);
   useEffect(() => {
     async function getCurrentLocation() {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -29,14 +37,28 @@ export default function HomeScreen() {
     }
     getCurrentLocation();
   }, []);
-
   useEffect(() => {
     if (coords) {
       fetchData(coords);
     }
   }, [coords]);
+  useEffect(() => {
+    async function fetchWeather() {
+      if (coords) {
+        const weatherData = await fetchData(coords);
+        if (weatherData) {
+          setWeather(weatherData);
+        }
+      }
+    }
+    fetchWeather();
+  }, [coords]);
 
-  console.log(coords);
+  useEffect(()=>{
+    if (city){
+      fetchLocations(city);
+    }
+  }, [city])
 
   return (
     <SafeAreaProvider>
