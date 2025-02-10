@@ -4,6 +4,16 @@ import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
 import fetchData from '../../helper/fetchData';
 import fetchLocations from '../../helper/locationComplete'
+interface LocationResult {
+  admin1?: string;
+  admin2?: string;
+  country: string;
+  latitude: number;
+  longitude: number;
+  name: string;
+  timezone: string;
+}
+
 
 interface WeatherData {
   date: string;
@@ -22,6 +32,7 @@ export default function HomeScreen() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [weather, setWeather] = useState<WeatherData[] | null>(null); 
   const [city, onChangeCity] = useState<string | null>(null);
+  let location;
   useEffect(() => {
     async function getCurrentLocation() {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -56,11 +67,10 @@ export default function HomeScreen() {
 
   useEffect(() => {
     if (!city) return;
-  
     const timeoutId = setTimeout(async () => {
       console.log("Fetching locations for:", city);
       const locations = await fetchLocations(city);
-      console.log("Fetched locations:", locations);
+      location=locations
     }, 500);
   
     return () => clearTimeout(timeoutId);
@@ -75,7 +85,7 @@ export default function HomeScreen() {
           onChangeText={onChangeCity}
           placeholder="Enter the name of your city"
         />
-        <Text style={styles.paragraph}>{errorMsg ? errorMsg : "Location Loaded"}</Text>
+        <Text style={styles.paragraph}>{location}</Text>
       </SafeAreaView>
     </SafeAreaProvider>
   );
