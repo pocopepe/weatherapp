@@ -13,7 +13,6 @@ export default function HomeScreen() {
 
   useEffect(() => {
     async function getCurrentLocation() {
-      
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
@@ -30,8 +29,8 @@ export default function HomeScreen() {
     if (location) {
     fetchData(location);}
   }, [location])
-  
-  
+
+  console.log(location);
 
   return (
     <SafeAreaProvider>
