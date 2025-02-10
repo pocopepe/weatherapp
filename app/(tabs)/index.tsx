@@ -54,11 +54,18 @@ export default function HomeScreen() {
     fetchWeather();
   }, [coords]);
 
-  useEffect(()=>{
-    if (city){
-      fetchLocations(city);
-    }
-  }, [city])
+  useEffect(() => {
+    if (!city) return;
+  
+    const timeoutId = setTimeout(async () => {
+      console.log("Fetching locations for:", city);
+      const locations = await fetchLocations(city);
+      console.log("Fetched locations:", locations);
+    }, 500);
+  
+    return () => clearTimeout(timeoutId);
+  }, [city]);
+  
 
   return (
     <SafeAreaProvider>
