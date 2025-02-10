@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react';
-import {StyleSheet, TextInput, Text, Platform} from 'react-native';
-import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
+import { StyleSheet, TextInput, Text } from 'react-native';
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
 import fetchData from '../../helper/fetchData';
 
+interface Coords {
+  lat: number;
+  long: number;
+}
 
 export default function HomeScreen() {
-  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const [coords, setCoords] = useState<Coords | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [city, onChangeCity]= useState("");
-  const url = "https://api.open-meteo.com/v1/forecast";
+  const [city, onChangeCity] = useState("");
 
   useEffect(() => {
     async function getCurrentLocation() {
@@ -19,30 +22,34 @@ export default function HomeScreen() {
         return;
       }
       let location = await Location.getCurrentPositionAsync({});
-      setLocation(location)
-
+      setCoords({
+        lat: location.coords.latitude,
+        long: location.coords.longitude,
+      });
     }
     getCurrentLocation();
   }, []);
-  
-  useEffect(()=>{
-    if (location) {
-    fetchData(location);}
-  }, [location])
 
-  console.log(location);
+  useEffect(() => {
+    if (coords) {
+      fetchData(coords);
+    }
+  }, [coords]);
+
+  console.log(coords);
 
   return (
     <SafeAreaProvider>
       <SafeAreaView>
-      <TextInput
+        <TextInput
           style={styles.input}
           onChangeText={onChangeCity}
           placeholder="Enter the name of your city"
         />
-      <Text style={styles.paragraph}>meh</Text>
+        <Text style={styles.paragraph}>{errorMsg ? errorMsg : "Location Loaded"}</Text>
       </SafeAreaView>
-    </SafeAreaProvider>);
+    </SafeAreaProvider>
+  );
 }
 
 const styles = StyleSheet.create({
