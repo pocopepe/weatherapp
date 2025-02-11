@@ -5,6 +5,7 @@ import * as Location from 'expo-location';
 import fetchData from '../../helper/fetchData';
 import fetchLocations from '../../helper/locationComplete';
 
+
 interface LocationResult {
   admin1?: string;
   admin2?: string;
