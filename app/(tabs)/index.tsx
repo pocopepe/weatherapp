@@ -19,6 +19,7 @@ interface LocationResult {
 interface WeatherData {
   date: string;
   description: string;
+  code: number;
   maxTemp: number;
   minTemp: number;
   currentTemp: number;
@@ -97,6 +98,7 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
 
+
         {location.length > 0 && (
           <View style={styles.dropdownContainer}>
             <FlatList
@@ -137,14 +139,14 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#1A1A1A", // Dark background
-    borderRadius: 25, // Pill shape
-    paddingHorizontal: 10, // Inner spacing
+    backgroundColor: "#1A1A1A", 
+    borderRadius: 25, 
+    paddingHorizontal: 10, 
     paddingVertical: 5,
     marginHorizontal: 12,
   },
   input: {
-    flex: 1, // Makes input take available space
+    flex: 1, 
     height: 40,
     color: "#e0e0e0",
     backgroundColor: "#1E1E1E",
@@ -152,10 +154,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   searchButton: {
-    backgroundColor: "#252525", // Dark grey button
+    backgroundColor: "#252525", 
     paddingVertical: 8,
     paddingHorizontal: 15,
-    borderRadius: 20, // Rounded button edges
+    borderRadius: 20,
     marginLeft: 8,
   },
   searchButtonText: {

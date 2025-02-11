@@ -3,7 +3,16 @@ interface Coords {
   long: number;
 }
 
-async function fetchData(coords: Coords) {
+interface WeatherData {
+  date: string;
+  description: string;
+  code: number;
+  maxTemp: number;
+  minTemp: number;
+  currentTemp: number;
+}
+
+async function fetchData(coords: Coords): Promise<WeatherData[] | null> {
   if (!coords?.lat || !coords?.long) {
     console.error("Error: Coordinates not available");
     return null;
@@ -24,34 +33,41 @@ async function fetchData(coords: Coords) {
     }
 
     const currentTemp = data.current.temperature_2m;
-    const weatherCodeMapping: Record<number, string> = {
-      0: "Clear sky",
-      1: "Mainly clear",
-      2: "Partly cloudy",
-      3: "Overcast",
-      45: "Fog",
-      48: "Rime fog",
-      51: "Light drizzle",
-      53: "Moderate drizzle",
-      55: "Heavy drizzle",
-      61: "Light rain",
-      63: "Moderate rain",
-      65: "Heavy rain",
-      80: "Light rain showers",
-      81: "Moderate rain showers",
-      82: "Heavy rain showers",
-      95: "Thunderstorm",
-      96: "Thunderstorm with hail",
-      99: "Severe thunderstorm with hail",
+
+    const weatherCodeMapping: Record<number, { description: string; code: number }> = {
+      0: { description: "Clear", code: 0 },
+      1: { description: "Sunny", code: 1 },
+      2: { description: "Cloudy", code: 2 },
+      3: { description: "Cloudy", code: 2 },
+      45: { description: "Cloudy", code: 2 },
+      48: { description: "Cloudy", code: 2 },
+      51: { description: "Rainy", code: 3 },
+      53: { description: "Rainy", code: 3 },
+      55: { description: "Rainy", code: 3 },
+      61: { description: "Rainy", code: 3 },
+      63: { description: "Rainy", code: 3 },
+      65: { description: "Rainy", code: 3 },
+      80: { description: "Rainy", code: 3 },
+      81: { description: "Rainy", code: 3 },
+      82: { description: "Rainy", code: 3 },
+      95: { description: "Rainy", code: 3 },
+      96: { description: "Rainy", code: 3 },
+      99: { description: "Rainy", code: 3 },
     };
 
-    return data.daily.time.map((time: string, index: number) => ({
-      date: new Date(time).toISOString().split("T")[0],
-      description: weatherCodeMapping[data.daily.weather_code[index]] || "Unknown",
-      maxTemp: data.daily.temperature_2m_max[index],
-      minTemp: data.daily.temperature_2m_min[index],
-      currentTemp,
-    }));
+    return data.daily.time.map((time: string, index: number) => {
+      const weatherCode = data.daily.weather_code[index];
+      const mappedWeather = weatherCodeMapping[weatherCode] || { description: "Unknown", code: -1 };
+
+      return {
+        date: new Date(time).toISOString().split("T")[0],
+        description: mappedWeather.description,
+        code: mappedWeather.code,
+        maxTemp: data.daily.temperature_2m_max[index],
+        minTemp: data.daily.temperature_2m_min[index],
+        currentTemp,
+      };
+    });
   } catch (error) {
     console.error("Error fetching weather data:", error);
     return null;
